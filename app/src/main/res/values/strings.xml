@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Pynny</string>
+    <string name="all_categories_label">Categories</string>
+    <string name="title_activity_categories">Categories</string>
+    <string name="category_list_item_name">Name</string>
+    <string name="category_list_item_id">ID</string>
+    <string name="category_is_income_label">Is Income?</string>
+    <string name="all_wallets_label">Wallets</string>
+    <string name="all_transactions_label">Transactions</string>
+    <string name="all_budgets_label">Budgets</string>
+</resources>

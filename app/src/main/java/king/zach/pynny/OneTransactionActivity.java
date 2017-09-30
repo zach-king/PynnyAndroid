@@ -1,0 +1,48 @@
+package king.zach.pynny;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.Locale;
+
+import king.zach.pynny.database.models.Transaction;
+import king.zach.pynny.database.models.Wallet;
+
+public class OneTransactionActivity extends AppCompatActivity {
+
+    private Transaction transaction;
+    private TextView tvTransactionAmount;
+    private TextView tvTransactionDescription;
+    private TextView tvTransactionCategoryName;
+    private TextView tvTransactionWalletName;
+    private TextView tvTransactionCreatedAt;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_one_wallet);
+
+        tvTransactionAmount = (TextView) findViewById(R.id.tvOneTransactionAmount);
+        tvTransactionDescription = (TextView) findViewById(R.id.tvOneTransactionDescription);
+        tvTransactionCategoryName = (TextView) findViewById(R.id.tvOneTransactionCategoryName);
+        tvTransactionWalletName = (TextView) findViewById(R.id.tvOneTransactionWalletName);
+        tvTransactionCreatedAt = (TextView) findViewById(R.id.tvOneTransactionCreatedAt);
+
+        Intent intent = getIntent();
+        transaction = (Transaction) intent.getSerializableExtra(AllTransactionsActivity.EXTRA_TRANSACTION);
+
+        setViewFields();
+    }
+
+    private void setViewFields() {
+        setTitle("Transaction #" + String.valueOf(transaction.getId()));
+        tvTransactionAmount.setText(String.format(Locale.US, "$%.2f", transaction.getAmount()));
+        tvTransactionDescription.setText(transaction.getDescription());
+        tvTransactionCategoryName.setText(transaction.getCategory().getName());
+        tvTransactionWalletName.setText(transaction.getWallet().getName());
+        tvTransactionCreatedAt.setText(transaction.getCreated_at());
+    }
+}
