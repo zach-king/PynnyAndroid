@@ -1,10 +1,11 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.single;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Switch;
-import android.widget.TextView;
 
+import king.zach.pynny.R;
+import king.zach.pynny.activities.all.AllCategoriesActivity;
 import king.zach.pynny.database.models.Category;
 
 public class OneCategoryActivity extends AppCompatActivity {

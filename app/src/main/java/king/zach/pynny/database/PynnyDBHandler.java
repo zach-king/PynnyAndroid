@@ -1,4 +1,4 @@
-package king.zach.pynny.database.models;
+package king.zach.pynny.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.util.ArrayList;
+import king.zach.pynny.database.models.Budget;
+import king.zach.pynny.database.models.Category;
+import king.zach.pynny.database.models.Transaction;
+import king.zach.pynny.database.models.Wallet;
 
 /**
  * Created by Zach on 9/11/2017.

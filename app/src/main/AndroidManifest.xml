@@ -17,39 +17,39 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AllCategoriesActivity"
+            android:name=".activities.all.AllCategoriesActivity"
             android:label="@string/all_categories_label"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".OneCategoryActivity"
+            android:name=".activities.single.OneCategoryActivity"
             android:label=""
-            android:parentActivityName=".AllCategoriesActivity" />
+            android:parentActivityName=".activities.all.AllCategoriesActivity" />
         <activity
-            android:name=".AllWalletsActivity"
+            android:name=".activities.all.AllWalletsActivity"
             android:label="@string/all_wallets_label"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".OneWalletActivity"
+            android:name=".activities.single.OneWalletActivity"
             android:label=""
-            android:parentActivityName=".AllWalletsActivity" />
+            android:parentActivityName=".activities.all.AllWalletsActivity" />
         <activity
-            android:name=".AllTransactionsActivity"
+            android:name=".activities.all.AllTransactionsActivity"
             android:label="@string/all_transactions_label"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".OneTransactionActivity"
-            android:parentActivityName=".AllTransactionsActivity" />
+            android:name=".activities.single.OneTransactionActivity"
+            android:parentActivityName=".activities.all.AllTransactionsActivity" />
         <activity
-            android:name=".AllBudgetsActivity"
+            android:name=".activities.all.AllBudgetsActivity"
             android:label="@string/all_budgets_label"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".OneBudgetActivity"
-            android:parentActivityName=".AllBudgetsActivity"></activity>
+            android:name=".activities.single.OneBudgetActivity"
+            android:parentActivityName=".activities.all.AllBudgetsActivity"></activity>
         <activity
-            android:name=".CreateCategoryActivity"
-            android:parentActivityName=".AllCategoriesActivity"></activity>
-        <activity android:name=".CreateWalletActivity"></activity>
+            android:name=".activities.create.CreateCategoryActivity"
+            android:parentActivityName=".activities.all.AllCategoriesActivity"></activity>
+        <activity android:name=".activities.create.CreateWalletActivity"></activity>
     </application>
 
 </manifest>

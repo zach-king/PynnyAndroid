@@ -1,4 +1,4 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.single;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import king.zach.pynny.R;
+import king.zach.pynny.activities.all.AllWalletsActivity;
 import king.zach.pynny.database.models.Wallet;
 
 public class OneWalletActivity extends AppCompatActivity {

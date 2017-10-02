@@ -1,4 +1,4 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.all;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,13 +12,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-import king.zach.pynny.adapters.WalletCursorAdapter;
-import king.zach.pynny.database.models.PynnyDBHandler;
+import king.zach.pynny.activities.create.CreateWalletActivity;
+import king.zach.pynny.activities.single.OneWalletActivity;
+import king.zach.pynny.R;
+import king.zach.pynny.utils.RequestsManager;
+import king.zach.pynny.database.adapters.WalletCursorAdapter;
+import king.zach.pynny.database.PynnyDBHandler;
 import king.zach.pynny.database.models.Wallet;
 
 public class AllWalletsActivity extends AppCompatActivity {
 
-    public static final String EXTRA_WALLET = "king.zach.pynny.AllWalletsActivity.wallet";
+    public static final String EXTRA_WALLET = "king.zach.pynny.activities.all.AllWalletsActivity.wallet";
 
     private static final String TAG = "AllWalletsView";
 

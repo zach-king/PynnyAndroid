@@ -1,14 +1,15 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.create;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
+import king.zach.pynny.R;
+import king.zach.pynny.utils.RequestsManager;
 import king.zach.pynny.database.models.Category;
-import king.zach.pynny.database.models.PynnyDBHandler;
+import king.zach.pynny.database.PynnyDBHandler;
 
 public class CreateCategoryActivity extends AppCompatActivity {
 

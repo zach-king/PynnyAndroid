@@ -1,15 +1,15 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.single;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Locale;
 
+import king.zach.pynny.R;
+import king.zach.pynny.activities.all.AllTransactionsActivity;
 import king.zach.pynny.database.models.Transaction;
-import king.zach.pynny.database.models.Wallet;
 
 public class OneTransactionActivity extends AppCompatActivity {
 

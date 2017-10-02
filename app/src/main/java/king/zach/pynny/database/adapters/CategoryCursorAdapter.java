@@ -1,4 +1,4 @@
-package king.zach.pynny.adapters;
+package king.zach.pynny.database.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +9,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import king.zach.pynny.R;
-import king.zach.pynny.database.models.PynnyDBHandler;
+import king.zach.pynny.database.PynnyDBHandler;
 
 
 /**

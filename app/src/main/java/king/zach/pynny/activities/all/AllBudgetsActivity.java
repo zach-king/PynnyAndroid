@@ -1,4 +1,4 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.all;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,15 +11,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import king.zach.pynny.adapters.BudgetCursorAdapter;
-import king.zach.pynny.adapters.TransactionCursorAdapter;
+import king.zach.pynny.activities.single.OneBudgetActivity;
+import king.zach.pynny.R;
+import king.zach.pynny.database.adapters.BudgetCursorAdapter;
 import king.zach.pynny.database.models.Budget;
-import king.zach.pynny.database.models.PynnyDBHandler;
-import king.zach.pynny.database.models.Transaction;
+import king.zach.pynny.database.PynnyDBHandler;
 
 public class AllBudgetsActivity extends AppCompatActivity {
 
-    public static final String EXTRA_BUDGET = "king.zach.pynny.AllBudgetsActivity.budget";
+    public static final String EXTRA_BUDGET = "king.zach.pynny.activities.all.AllBudgetsActivity.budget";
 
     private static final String TAG = "AllBudgetsView";
 

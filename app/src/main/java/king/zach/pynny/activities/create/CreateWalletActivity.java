@@ -1,11 +1,13 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.create;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import king.zach.pynny.database.models.PynnyDBHandler;
+import king.zach.pynny.R;
+import king.zach.pynny.utils.RequestsManager;
+import king.zach.pynny.database.PynnyDBHandler;
 import king.zach.pynny.database.models.Wallet;
 
 public class CreateWalletActivity extends AppCompatActivity {

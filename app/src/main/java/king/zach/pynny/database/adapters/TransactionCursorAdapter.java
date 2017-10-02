@@ -1,4 +1,4 @@
-package king.zach.pynny.adapters;
+package king.zach.pynny.database.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import king.zach.pynny.R;
-import king.zach.pynny.database.models.PynnyDBHandler;
+import king.zach.pynny.database.PynnyDBHandler;
 
 /**
  * Created by Zach on 9/30/2017.

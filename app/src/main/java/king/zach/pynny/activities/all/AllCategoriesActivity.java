@@ -1,8 +1,7 @@
-package king.zach.pynny;
+package king.zach.pynny.activities.all;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,14 +11,18 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import king.zach.pynny.adapters.CategoryCursorAdapter;
+import king.zach.pynny.activities.create.CreateCategoryActivity;
+import king.zach.pynny.activities.single.OneCategoryActivity;
+import king.zach.pynny.R;
+import king.zach.pynny.utils.RequestsManager;
+import king.zach.pynny.database.adapters.CategoryCursorAdapter;
 import king.zach.pynny.database.models.Category;
-import king.zach.pynny.database.models.PynnyDBHandler;
+import king.zach.pynny.database.PynnyDBHandler;
 
 public class AllCategoriesActivity extends AppCompatActivity {
 
     private static final String TAG = "AllCategoriesView";
-    public static final String EXTRA_ONE_CATEGORY = "king.zach.pynny.AllCategoriesActivity.category";
+    public static final String EXTRA_ONE_CATEGORY = "king.zach.pynny.activities.all.AllCategoriesActivity.category";
 
     private ListView categoriesListbox;
     private FloatingActionButton addCategoryBtn;

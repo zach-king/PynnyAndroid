@@ -5,6 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import king.zach.pynny.activities.all.AllBudgetsActivity;
+import king.zach.pynny.activities.all.AllCategoriesActivity;
+import king.zach.pynny.activities.all.AllTransactionsActivity;
+import king.zach.pynny.activities.all.AllWalletsActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
