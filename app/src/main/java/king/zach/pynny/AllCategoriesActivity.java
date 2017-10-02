@@ -90,6 +90,8 @@ public class AllCategoriesActivity extends AppCompatActivity {
                 cursor.close();
                 cursor = dbHandler.getAllCategoriesCursor();
                 adapter.changeCursor(cursor);
+
+                Toast.makeText(getApplicationContext(), "Category created successfully", Toast.LENGTH_SHORT).show();
             }
         }
     }

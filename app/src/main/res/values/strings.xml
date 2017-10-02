@@ -11,4 +11,7 @@
     <string name="create_category_name_label">Name: </string>
     <string name="create_category_is_income_label">Is Income: </string>
     <string name="create_category_button_label">Create Category</string>
+    <string name="create_wallet_name_label">Name: </string>
+    <string name="create_wallet_start_balance_label">Initial Balance:</string>
+    <string name="create_wallet_button_label">Create Wallet</string>
 </resources>

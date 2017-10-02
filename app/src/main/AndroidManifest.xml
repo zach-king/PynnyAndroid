@@ -46,7 +46,10 @@
         <activity
             android:name=".OneBudgetActivity"
             android:parentActivityName=".AllBudgetsActivity"></activity>
-        <activity android:name=".CreateCategoryActivity"></activity>
+        <activity
+            android:name=".CreateCategoryActivity"
+            android:parentActivityName=".AllCategoriesActivity"></activity>
+        <activity android:name=".CreateWalletActivity"></activity>
     </application>
 
 </manifest>

@@ -71,20 +71,10 @@ public class AllWalletsActivity extends AppCompatActivity {
     }
 
     public void createWallet(View view) {
-        // TODO
         Log.i(this.getClass().getName(), "creating new wallet");
-        Toast.makeText(
-                getApplicationContext(),
-                "Creating new wallet",
-                Toast.LENGTH_SHORT).show();
 
-        Wallet wallet = new Wallet("Wallet " + count);
-        dbHandler.addWallet(wallet);
-        count++;
-
-        cursor.close();
-        cursor = dbHandler.getAllWalletsCursor();
-        adapter.changeCursor(cursor);
+        Intent intent = new Intent(this, CreateWalletActivity.class);
+        startActivityForResult(intent, RequestsManager.REQUEST_NEW_WALLET);
     }
 
     public void viewWallet(View view, Wallet wallet) {
@@ -93,5 +83,18 @@ public class AllWalletsActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_WALLET, wallet);
 
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RequestsManager.REQUEST_NEW_WALLET) {
+            if (resultCode == RESULT_OK) {
+                cursor.close();
+                cursor = dbHandler.getAllWalletsCursor();
+                adapter.changeCursor(cursor);
+
+                Toast.makeText(getApplicationContext(), "Wallet created successfully", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

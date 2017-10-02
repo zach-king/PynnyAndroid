@@ -31,7 +31,7 @@ public class OneWalletActivity extends AppCompatActivity {
     }
 
     private void setViewFields() {
-        setTitle(wallet.getName());
+        setTitle(wallet.getName() + " (Wallet)");
         tvWalletBalance.setText(String.format(Locale.US, "$%.2f", wallet.getBalance()));
     }
 }
