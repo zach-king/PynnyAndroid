@@ -6,21 +6,6 @@
     android:layout_height="match_parent"
     tools:context="king.zach.pynny.OneCategoryActivity">
 
-    <TextView
-        android:id="@+id/tvOneCategoryName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="30sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
-
     <Switch
         android:id="@+id/swOneCategoryIsIncome"
         android:layout_width="0dp"
@@ -28,10 +13,11 @@
         android:text="@string/category_is_income_label"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/tvOneCategoryName"
         android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp" />
+        android:layout_marginRight="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <ListView
         android:id="@+id/lvOneCategoryTransactions"

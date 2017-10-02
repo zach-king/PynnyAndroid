@@ -36,7 +36,7 @@ public class AllWalletsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_wallets);
 
         // Get the user's wallets
-        dbHandler = new PynnyDBHandler(this, null, null, 1);
+        dbHandler = PynnyDBHandler.getInstance(this);
         cursor = dbHandler.getAllWalletsCursor();
 
         // Attach the adapter to a ListView

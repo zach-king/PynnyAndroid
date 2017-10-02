@@ -16,7 +16,12 @@ public class Category implements Serializable {
 
     }
 
-    public Category(int id, String name, boolean isIncome) {
+    public Category(String name, boolean isIncome) {
+        this.name = name;
+        this.isIncome = isIncome;
+    }
+
+    public Category(long id, String name, boolean isIncome) {
         this.id = id;
         this.name = name;
         this.isIncome = isIncome;

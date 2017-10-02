@@ -2,6 +2,7 @@ package king.zach.pynny;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import king.zach.pynny.database.models.PynnyDBHandler;
 public class AllCategoriesActivity extends AppCompatActivity {
 
     private static final String TAG = "AllCategoriesView";
+    public static final String EXTRA_ONE_CATEGORY = "king.zach.pynny.AllCategoriesActivity.category";
 
     private ListView categoriesListbox;
     private FloatingActionButton addCategoryBtn;
@@ -33,7 +35,7 @@ public class AllCategoriesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_categories);
 
         // Get the user's categories
-        this.dbHandler = new PynnyDBHandler(this, null, null, 1);
+        this.dbHandler = PynnyDBHandler.getInstance(this);
         cursor = dbHandler.getAllCategoriesCursor();
 
         // Attach the adapter to a ListView
@@ -68,24 +70,27 @@ public class AllCategoriesActivity extends AppCompatActivity {
     }
 
     public void createCategory(View view) {
-        // TODO
         Log.i(this.getClass().getName(), "creating new category");
-        Toast.makeText(
-                getApplicationContext(),
-                "Creating new category",
-                Toast.LENGTH_SHORT).show();
 
-        Category cat = new Category(count, "Category " + count, false);
-        dbHandler.addCategory(cat);
-        count++;
-
-        cursor.close();
-        cursor = dbHandler.getAllCategoriesCursor();
-        adapter.changeCursor(cursor);
+        Intent intent = new Intent(this, CreateCategoryActivity.class);
+        startActivityForResult(intent, RequestsManager.REQUEST_NEW_CATEGORY);
     }
 
     public void viewCategory(View view, Category category) {
         Intent intent = new Intent(this, OneCategoryActivity.class);
+        intent.putExtra(EXTRA_ONE_CATEGORY, category);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RequestsManager.REQUEST_NEW_CATEGORY) {
+            if (resultCode == RESULT_OK) {
+                // Update the cursor; updates the list of categories
+                cursor.close();
+                cursor = dbHandler.getAllCategoriesCursor();
+                adapter.changeCursor(cursor);
+            }
+        }
     }
 }

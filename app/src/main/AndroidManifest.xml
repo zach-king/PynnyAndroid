@@ -32,17 +32,21 @@
             android:name=".OneWalletActivity"
             android:label=""
             android:parentActivityName=".AllWalletsActivity" />
-        <activity android:name=".AllTransactionsActivity"
-            android:parentActivityName=".MainActivity"
-            android:label="@string/all_transactions_label"/>
-        <activity android:name=".OneTransactionActivity"
+        <activity
+            android:name=".AllTransactionsActivity"
+            android:label="@string/all_transactions_label"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".OneTransactionActivity"
             android:parentActivityName=".AllTransactionsActivity" />
-        <activity android:name=".AllBudgetsActivity"
-            android:parentActivityName=".MainActivity"
-            android:label="@string/all_budgets_label"/>
-        <activity android:name=".OneBudgetActivity"
-            android:parentActivityName=".AllBudgetsActivity">
-        </activity>
+        <activity
+            android:name=".AllBudgetsActivity"
+            android:label="@string/all_budgets_label"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".OneBudgetActivity"
+            android:parentActivityName=".AllBudgetsActivity"></activity>
+        <activity android:name=".CreateCategoryActivity"></activity>
     </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -13,6 +14,11 @@ import java.util.ArrayList;
  */
 
 public class PynnyDBHandler extends SQLiteOpenHelper {
+
+    // Using the Singleton design pattern
+    private static PynnyDBHandler sInstance;
+
+    private static final String TAG = "PynnyDBHandler";
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "pynny.db";
@@ -66,15 +72,34 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
             COLUMN_BUDGET_MONTH
     };
 
-    public PynnyDBHandler(Context context, String name,
-                          SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    /**
+     * Constructor should be private to prevent direct instantiation.
+     * Make a call to the static method "getInstance()" instead.
+     */
+    private PynnyDBHandler(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized PynnyDBHandler getInstance(Context context) {
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new PynnyDBHandler(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    // Called when the database connection is being configured
+    // Configure database settings for things like foreign key support, write-ahead logging, etc.
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create initial tables
-        db.execSQL("PRAGMA foreign_keys = ON");
 
         // Categories
         String CREATE_CATEGORIES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CATEGORIES + "(" +
@@ -122,79 +147,129 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         db.execSQL(createBudgetsTable);
     }
 
+    // Called when the database needs to be upgraded.
+    // This method will only be called if a database already exists on disk with the same DATABASE_NAME,
+    // but the DATABASE_VERSION is different than the version of the database that exists on disk.
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WALLETS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETS);
-        onCreate(db);
+        if (oldVersion != newVersion) {
+            // Simplest implementation is to drop all old tables and recreate them
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_WALLETS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGETS);
+            onCreate(db);
+        }
     }
 
     public void addCategory(Category category) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_CATEGORY_NAME, category.getName());
-        values.put(COLUMN_CATEGORY_IS_INCOME, category.getIsIncome());
+        // Create and/or open the database for writing
+        SQLiteDatabase db = getWritableDatabase();
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_CATEGORIES, null, values);
-        db.close();
+        // It's a good idea to wrap the insert in a transaction.
+        // This helps with performance and ensures consistency of the database
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_CATEGORY_NAME, category.getName());
+            values.put(COLUMN_CATEGORY_IS_INCOME, category.getIsIncome());
+
+            // Don't specify the primary key. SQLite auto increments the primary key
+            db.insertOrThrow(TABLE_CATEGORIES, null, values);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to add category to database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public void addWallet(Wallet wallet) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_WALLET_NAME, wallet.getName());
-        values.put(COLUMN_WALLET_BALANCE, wallet.getBalance());
-        values.put(COLUMN_WALLET_CREATED_AT, wallet.getCreated_at());
-
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_WALLETS, null, values);
-        db.close();
+        db.beginTransaction();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_WALLET_NAME, wallet.getName());
+            values.put(COLUMN_WALLET_BALANCE, wallet.getBalance());
+            values.put(COLUMN_WALLET_CREATED_AT, wallet.getCreated_at());
+
+            db.insertOrThrow(TABLE_WALLETS, null, values);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying add wallet to database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public void addTransaction(Transaction transaction) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TRANSACTION_AMOUNT, transaction.getAmount());
-        values.put(COLUMN_TRANSACTION_DESCRIPTION, transaction.getDescription());
-        values.put(COLUMN_TRANSACTION_CATEGORY, transaction.getCategory().getId());
-        values.put(COLUMN_TRANSACTION_WALLET, transaction.getWallet().getId());
-        values.put(COLUMN_TRANSACTION_CREATED_AT, transaction.getCreated_at());
-
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_TRANSACTIONS, null, values);
-        db.close();
+        db.beginTransaction();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_TRANSACTION_AMOUNT, transaction.getAmount());
+            values.put(COLUMN_TRANSACTION_DESCRIPTION, transaction.getDescription());
+            values.put(COLUMN_TRANSACTION_CATEGORY, transaction.getCategory().getId());
+            values.put(COLUMN_TRANSACTION_WALLET, transaction.getWallet().getId());
+            values.put(COLUMN_TRANSACTION_CREATED_AT, transaction.getCreated_at());
+
+            db.insertOrThrow(TABLE_TRANSACTIONS, null, values);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to add transaction to database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public void addBudget(Budget budget) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_BUDGET_GOAL, budget.getGoal());
-        values.put(COLUMN_BUDGET_BALANCE, budget.getBalance());
-        values.put(COLUMN_BUDGET_MONTH, budget.getMonth());
-        values.put(COLUMN_BUDGET_CATEGORY, budget.getCategory().getId());
-
-        Wallet wallet = budget.getWallet();
-        if (wallet != null)
-            values.put(COLUMN_BUDGET_WALLET, wallet.getId());
-
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_BUDGETS, null, values);
-        db.close();
+        db.beginTransaction();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_BUDGET_GOAL, budget.getGoal());
+            values.put(COLUMN_BUDGET_BALANCE, budget.getBalance());
+            values.put(COLUMN_BUDGET_MONTH, budget.getMonth());
+            values.put(COLUMN_BUDGET_CATEGORY, budget.getCategory().getId());
+
+            Wallet wallet = budget.getWallet();
+            if (wallet != null)
+                values.put(COLUMN_BUDGET_WALLET, wallet.getId());
+
+            db.insertOrThrow(TABLE_BUDGETS, null, values);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Error trying to add budget to database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public Category getCategory(long id) {
-        String query = "SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_ID  + " = " + id;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        Category category = new Category();
+
+        Cursor cursor = db.query(
+                TABLE_CATEGORIES,
+                CATEGORY_COLUMNS,
+                COLUMN_CATEGORY_ID + " = ?",
+                new String[] { String.valueOf(id) },
+                null, null, null
+        );
+
+        Category category = null;
 
         if (cursor.moveToFirst()) {
-            category.setId(cursor.getLong(cursor.getColumnIndex(COLUMN_CATEGORY_ID)));
-            category.setName(cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME)));
-            category.setIsIncome(cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_IS_INCOME)) != 0);
-            cursor.close();
-        } else {
-            category = null;
+            long cId = cursor.getLong(cursor.getColumnIndex(COLUMN_CATEGORY_ID));
+            String name = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY_NAME));
+            boolean isIncome = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_IS_INCOME)) != 0;
+
+            category = new Category(cId, name, isIncome);
         }
+
+        cursor.close();
         db.close();
         return category;
     }

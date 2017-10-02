@@ -37,7 +37,7 @@ public class AllBudgetsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_budgets);
 
         // Get the user's budgets
-        dbHandler = new PynnyDBHandler(this, null, null, 1);
+        dbHandler = PynnyDBHandler.getInstance(this);
         cursor = dbHandler.getAllBudgetsCursor();
 
         // Attach the adapter to a ListView

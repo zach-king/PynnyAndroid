@@ -8,4 +8,7 @@
     <string name="all_wallets_label">Wallets</string>
     <string name="all_transactions_label">Transactions</string>
     <string name="all_budgets_label">Budgets</string>
+    <string name="create_category_name_label">Name: </string>
+    <string name="create_category_is_income_label">Is Income: </string>
+    <string name="create_category_button_label">Create Category</string>
 </resources>

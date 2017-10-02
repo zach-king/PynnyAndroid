@@ -24,7 +24,7 @@ public class TransactionCursorAdapter extends CursorAdapter {
 
     public TransactionCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
-        this.dbHandler = new PynnyDBHandler(context, null, null, 1);
+        this.dbHandler = PynnyDBHandler.getInstance(context);
     }
 
     // The newView() is used to inflate a new view and return it;
