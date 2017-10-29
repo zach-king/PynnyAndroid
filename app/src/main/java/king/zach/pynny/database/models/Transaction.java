@@ -25,6 +25,14 @@ public class Transaction implements Serializable {
         this.created_at = created_at;
     }
 
+    public Transaction(double amount, Category category, String description, String created_at, Wallet wallet) {
+        this.amount = amount;
+        this.category = category;
+        this.description = description;
+        this.created_at = created_at;
+        this.wallet = wallet;
+    }
+
     public Transaction(long id, double amount, Category category, String description, Wallet wallet) {
         this.id = id;
         this.amount = amount;

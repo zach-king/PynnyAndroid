@@ -11,11 +11,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import king.zach.pynny.activities.create.CreateTransactionActivity;
 import king.zach.pynny.activities.single.OneTransactionActivity;
 import king.zach.pynny.R;
 import king.zach.pynny.database.adapters.TransactionCursorAdapter;
 import king.zach.pynny.database.PynnyDBHandler;
 import king.zach.pynny.database.models.Transaction;
+import king.zach.pynny.utils.RequestsManager;
 
 public class AllTransactionsActivity extends AppCompatActivity {
 
@@ -72,12 +74,10 @@ public class AllTransactionsActivity extends AppCompatActivity {
     }
 
     public void createTransaction(View view) {
-        // TODO
         Log.i(this.getClass().getName(), "creating new transaction");
-        Toast.makeText(
-                getApplicationContext(),
-                "Creating new transaction",
-                Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, CreateTransactionActivity.class);
+        startActivityForResult(intent, RequestsManager.REQUEST_NEW_TRANSACTION);
     }
 
     public void viewTransaction(View view, Transaction transaction) {
@@ -86,5 +86,18 @@ public class AllTransactionsActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_TRANSACTION, transaction);
 
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RequestsManager.REQUEST_NEW_TRANSACTION) {
+            if (resultCode == RESULT_OK) {
+                cursor.close();
+                cursor = dbHandler.getAllTransactionsCursor();
+                adapter.changeCursor(cursor);
+
+                Toast.makeText(getApplicationContext(), "Transaction created successfully", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

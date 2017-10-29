@@ -23,7 +23,7 @@ public class OneTransactionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_one_wallet);
+        setContentView(R.layout.activity_one_transaction);
 
         tvTransactionAmount = (TextView) findViewById(R.id.tvOneTransactionAmount);
         tvTransactionDescription = (TextView) findViewById(R.id.tvOneTransactionDescription);

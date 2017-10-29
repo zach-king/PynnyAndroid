@@ -45,11 +45,13 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".activities.single.OneBudgetActivity"
-            android:parentActivityName=".activities.all.AllBudgetsActivity"></activity>
+            android:parentActivityName=".activities.all.AllBudgetsActivity" />
         <activity
             android:name=".activities.create.CreateCategoryActivity"
-            android:parentActivityName=".activities.all.AllCategoriesActivity"></activity>
-        <activity android:name=".activities.create.CreateWalletActivity"></activity>
+            android:parentActivityName=".activities.all.AllCategoriesActivity" />
+        <activity android:name=".activities.create.CreateWalletActivity" />
+        <activity android:name=".activities.create.CreateTransactionActivity" />
+        <activity android:name=".activities.create.CreateBudgetActivity"></activity>
     </application>
 
 </manifest>
