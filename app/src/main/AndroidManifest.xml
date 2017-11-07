@@ -49,9 +49,12 @@
         <activity
             android:name=".activities.create.CreateCategoryActivity"
             android:parentActivityName=".activities.all.AllCategoriesActivity" />
-        <activity android:name=".activities.create.CreateWalletActivity" />
-        <activity android:name=".activities.create.CreateTransactionActivity" />
-        <activity android:name=".activities.create.CreateBudgetActivity"></activity>
+        <activity android:name=".activities.create.CreateWalletActivity"
+            android:parentActivityName=".activities.all.AllWalletsActivity"/>
+        <activity android:name=".activities.create.CreateTransactionActivity"
+            android:parentActivityName=".activities.all.AllTransactionsActivity"/>
+        <activity android:name=".activities.create.CreateBudgetActivity"
+            android:parentActivityName=".activities.all.AllBudgetsActivity"></activity>
     </application>
 
 </manifest>

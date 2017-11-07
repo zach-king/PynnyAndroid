@@ -6,6 +6,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import king.zach.pynny.utils.TimeUtil;
+
 /**
  * Created by Zach on 9/29/2017.
  */
@@ -30,7 +32,7 @@ public class Wallet implements Serializable {
         this.id = id;
         this.name = name;
         this.balance = start_balance;
-        this.created_at = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString();
+        this.created_at = TimeUtil.getCurrentTimeString();
 
         NUM_WALLETS++;
     }
@@ -39,7 +41,7 @@ public class Wallet implements Serializable {
         this.id = NUM_WALLETS;
         this.name = name;
         this.balance = start_balance;
-        this.created_at = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString();
+        this.created_at = TimeUtil.getCurrentTimeString();
 
         NUM_WALLETS++;
     }
@@ -48,7 +50,7 @@ public class Wallet implements Serializable {
         this.id = NUM_WALLETS;
         this.name = name;
         this.balance = 0.0;
-        this.created_at = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()).toString();
+        this.created_at = TimeUtil.getCurrentTimeString();
 
         NUM_WALLETS++;
     }

@@ -20,6 +20,7 @@ import king.zach.pynny.database.models.Category;
 import king.zach.pynny.database.models.Transaction;
 import king.zach.pynny.database.models.Wallet;
 import king.zach.pynny.utils.RequestsManager;
+import king.zach.pynny.utils.TimeUtil;
 
 public class CreateTransactionActivity extends AppCompatActivity {
 
@@ -61,7 +62,6 @@ public class CreateTransactionActivity extends AppCompatActivity {
     }
 
     private void createAndSaveTransaction() {
-        // TODO - Create the new Transaction and save it to the database
         Cursor cursor = (Cursor) spWallets.getSelectedItem();
         Wallet wallet = null;
         Category category = null;
@@ -88,13 +88,7 @@ public class CreateTransactionActivity extends AppCompatActivity {
 
         double amount = Double.valueOf(((EditText) findViewById(R.id.etCreateTransactionAmount)).getText().toString());
         DatePicker dp = (DatePicker) findViewById(R.id.dpCreateTransactionCreatedAt);
-        int createdMonth = dp.getMonth();
-        int createdDay = dp.getDayOfMonth();
-        int createdYear = dp.getYear();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(createdYear, createdMonth, createdDay);
-        String createdAt = calendar.getTime().toString();
+        String createdAt = TimeUtil.getTimeStringFromDatePicker(dp);
 
         String description = ((EditText) findViewById(R.id.etCreateTransactionDescription)).getText().toString();
 

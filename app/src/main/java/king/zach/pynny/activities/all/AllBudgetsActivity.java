@@ -11,11 +11,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import king.zach.pynny.activities.create.CreateBudgetActivity;
+import king.zach.pynny.activities.create.CreateCategoryActivity;
 import king.zach.pynny.activities.single.OneBudgetActivity;
 import king.zach.pynny.R;
 import king.zach.pynny.database.adapters.BudgetCursorAdapter;
 import king.zach.pynny.database.models.Budget;
 import king.zach.pynny.database.PynnyDBHandler;
+import king.zach.pynny.utils.RequestsManager;
 
 public class AllBudgetsActivity extends AppCompatActivity {
 
@@ -68,12 +71,10 @@ public class AllBudgetsActivity extends AppCompatActivity {
     }
 
     public void createBudget(View view) {
-        // TODO
         Log.i(this.getClass().getName(), "creating new budget");
-        Toast.makeText(
-                getApplicationContext(),
-                "Creating new budget",
-                Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, CreateBudgetActivity.class);
+        startActivityForResult(intent, RequestsManager.REQUEST_NEW_BUDGET);
     }
 
     public void viewBudget(View view, Budget budget) {
@@ -81,5 +82,19 @@ public class AllBudgetsActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_BUDGET, budget);
 
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RequestsManager.REQUEST_NEW_BUDGET) {
+            if (resultCode == RESULT_OK) {
+                // Update the cursor; updates the list of budgets
+                cursor.close();
+                cursor = dbHandler.getAllBudgetsCursor();
+                adapter.changeCursor(cursor);
+
+                Toast.makeText(getApplicationContext(), "Budget created successfully", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

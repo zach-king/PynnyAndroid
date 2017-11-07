@@ -20,4 +20,8 @@
     <string name="create_transaction_created_at_label">Created At</string>
     <string name="create_transaction_amount_label">Amount</string>
     <string name="create_transaction_button_label">Create Transaction</string>
+    <string name="create_budget_wallet_label">Wallet</string>
+    <string name="create_budget_category_label">Category</string>
+    <string name="create_budget_goal_label">Goal</string>
+    <string name="create_budget_submit_btn">Create Budget</string>
 </resources>

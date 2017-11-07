@@ -16,6 +16,14 @@ public class Budget implements Serializable {
     private Category category;
     private Wallet wallet;
 
+    public Budget(double goal, String month, Category category, Wallet wallet) {
+        this.goal = goal;
+        this.balance = 0.0;
+        this.month = month;
+        this.category = category;
+        this.wallet = wallet;
+    }
+
     public Budget(long id, double goal, double balance, Category category, Wallet wallet, String month) {
         this.id = id;
         this.goal = goal;
