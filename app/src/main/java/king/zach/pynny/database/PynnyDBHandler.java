@@ -391,6 +391,28 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         );
     }
 
+    public boolean updateWallet(Wallet wallet) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        boolean result = false;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_WALLET_BALANCE, wallet.getBalance());
+            values.put(COLUMN_WALLET_NAME, wallet.getName());
+
+            db.update(TABLE_WALLETS, values, COLUMN_WALLET_ID + " = " + wallet.getId(), null);
+            db.setTransactionSuccessful();
+            result = true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to udpate wallet in database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
+
+        return result;
+    }
+
     public boolean deleteCategory(long id) {
         boolean result = false;
         String query = "SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_ID + " = " + id;

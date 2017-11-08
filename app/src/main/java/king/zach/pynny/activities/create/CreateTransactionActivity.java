@@ -88,6 +88,11 @@ public class CreateTransactionActivity extends AppCompatActivity {
         Transaction transaction = new Transaction(amount, category, description, createdAt, wallet);
         dbHandler.addTransaction(transaction);
 
+        // Propagate the effects of the transaction to the corresponding wallet
+        Log.v(TAG, "Deducting transaction amount from wallet balance");
+        wallet.setBalance(wallet.getBalance() - amount);
+        dbHandler.updateWallet(wallet);
+
         setResult(RESULT_OK);
         finishActivity(RequestsManager.REQUEST_NEW_TRANSACTION);
     }
