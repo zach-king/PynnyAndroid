@@ -34,15 +34,12 @@ public class CategoryCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find fileds to populate in inflated template
-        TextView tvCategoryId = (TextView) view.findViewById(R.id.tvCategoryId);
         TextView tvCategoryName = (TextView) view.findViewById(R.id.tvCategoryName);
 
         // Extract properties from cursor
-        long categoryId = cursor.getLong(cursor.getColumnIndexOrThrow(PynnyDBHandler.COLUMN_CATEGORY_ID));
         String categoryName = cursor.getString(cursor.getColumnIndexOrThrow(PynnyDBHandler.COLUMN_CATEGORY_NAME));
 
         // Populate the fields in the view
-        tvCategoryId.setText(String.valueOf(categoryId));
         tvCategoryName.setText(categoryName);
     }
 }

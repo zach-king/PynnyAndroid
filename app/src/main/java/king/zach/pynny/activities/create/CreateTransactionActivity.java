@@ -62,22 +62,14 @@ public class CreateTransactionActivity extends AppCompatActivity {
     }
 
     private void createAndSaveTransaction() {
-        Cursor cursor = (Cursor) spWallets.getSelectedItem();
         Wallet wallet = null;
         Category category = null;
 
-        if (cursor.moveToFirst()) {
-            long id = cursor.getLong(cursor.getColumnIndex(PynnyDBHandler.COLUMN_WALLET_ID));
-            wallet = dbHandler.getWallet(id);
-        }
+        long id = spWallets.getSelectedItemId();
+        wallet = dbHandler.getWallet(id);
 
-        cursor.close();
-        cursor = (Cursor) spCategories.getSelectedItem();
-        if (cursor.moveToFirst()) {
-            long id = cursor.getLong(cursor.getColumnIndex(PynnyDBHandler.COLUMN_CATEGORY_ID));
-            category = dbHandler.getCategory(id);
-        }
-        cursor.close();
+        id = spCategories.getSelectedItemId();
+        category = dbHandler.getCategory(id);
 
         if (wallet == null || category == null) {
             Log.e(TAG, "Failed to retrieve the wallet or category for the new transaction");
