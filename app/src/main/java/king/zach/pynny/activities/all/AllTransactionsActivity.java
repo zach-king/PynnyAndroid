@@ -54,9 +54,6 @@ public class AllTransactionsActivity extends AppCompatActivity {
                 Log.d(TAG, "Clicked Item in Transactions ListView, at position " + position + ", with id " + id);
 
                 Transaction transaction = dbHandler.getTransaction(id);
-                Toast.makeText(getApplicationContext(),
-                        transaction.getDescription(), Toast.LENGTH_SHORT)
-                        .show();
 
                 viewTransaction(view, transaction);
             }
@@ -81,7 +78,6 @@ public class AllTransactionsActivity extends AppCompatActivity {
     }
 
     public void viewTransaction(View view, Transaction transaction) {
-        Toast.makeText(getApplicationContext(), transaction.getDescription(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, OneTransactionActivity.class);
         intent.putExtra(EXTRA_TRANSACTION, transaction);
 
