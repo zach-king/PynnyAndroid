@@ -67,11 +67,6 @@ public class OneTransactionActivity extends AppCompatActivity {
     private void deleteTransaction() {
         Log.v(TAG, "Deleting transaction #" + transaction.getId());
         dbHandler.deleteTransaction(transaction.getId());
-        Wallet newWallet = transaction.getWallet();
-        newWallet.setBalance(newWallet.getBalance() + transaction.getAmount());
-        dbHandler.updateWallet(newWallet);
-
-
     }
 
     private void setViewFields() {

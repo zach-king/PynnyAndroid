@@ -206,7 +206,8 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         }
     }
 
-    public void addTransaction(Transaction transaction) {
+    public boolean addTransaction(Transaction transaction) {
+        boolean successful = false;
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
 
@@ -225,6 +226,21 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+
+        // Propagate the effects of the transaction to the corresponding wallet
+        Log.v(TAG, "Deducting transaction amount from wallet balance");
+        transaction.getWallet().setBalance(transaction.getWallet().getBalance() - transaction.getAmount());
+        successful = this.updateWallet(transaction.getWallet());
+        if (!successful)
+            return false;
+
+        Budget budget = findBudget(transaction.getWallet().getId(), transaction.getCategory().getId());
+        if (budget != null) {
+            budget.setBalance(budget.getBalance() + transaction.getAmount());
+            successful = updateBudget(budget);
+        }
+
+        return successful;
     }
 
     public void addBudget(Budget budget) {
@@ -367,6 +383,38 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return budget;
     }
 
+    public Budget findBudget(long walletId, long categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] args = { String.valueOf(walletId), String.valueOf(categoryId) };
+
+        Cursor cursor = db.query(
+                TABLE_BUDGETS,
+                BUDGET_COLUMNS,
+                COLUMN_BUDGET_WALLET + " = ? AND " + COLUMN_BUDGET_CATEGORY + " = ?",
+                args,
+                null, null, COLUMN_BUDGET_MONTH + " DESC"
+        );
+
+        Budget budget = null;
+        if (cursor.moveToFirst()) {
+            long bId = cursor.getLong(cursor.getColumnIndex(COLUMN_BUDGET_ID));
+            double goal = cursor.getDouble(cursor.getColumnIndex(COLUMN_BUDGET_GOAL));
+            double balance = cursor.getDouble(cursor.getColumnIndex(COLUMN_BUDGET_BALANCE));
+            long catId = cursor.getLong(cursor.getColumnIndex(COLUMN_BUDGET_CATEGORY));
+            long walId = cursor.getLong(cursor.getColumnIndex(COLUMN_BUDGET_WALLET));
+            String month = cursor.getString(cursor.getColumnIndex(COLUMN_BUDGET_MONTH));
+
+            Category category = getCategory(catId);
+            Wallet wallet = getWallet(walId);
+
+            budget = new Budget(bId, goal, balance, category, wallet, month);
+        }
+
+        cursor.close();
+        db.close();
+        return budget;
+    }
+
     public Cursor getAllWalletsCursor() {
         return getReadableDatabase().query(
                 TABLE_WALLETS, WALLET_COLUMNS, null, null, null, null, COLUMN_WALLET_CREATED_AT + " DESC"
@@ -413,6 +461,36 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return result;
     }
 
+    public boolean updateBudget(Budget budget) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        boolean result = false;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_BUDGET_WALLET, budget.getWallet().getId());
+            values.put(COLUMN_BUDGET_CATEGORY, budget.getCategory().getId());
+            values.put(COLUMN_BUDGET_BALANCE, budget.getBalance());
+            values.put(COLUMN_BUDGET_GOAL, budget.getGoal());
+            values.put(COLUMN_BUDGET_MONTH, budget.getMonth());
+
+            db.update(
+                    TABLE_BUDGETS,
+                    values,
+                    COLUMN_BUDGET_ID + " = " + budget.getId(),
+                    null
+            );
+            db.setTransactionSuccessful();
+            result = true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error trying to update budget in database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
+
+        return result;
+    }
+
     public boolean deleteCategory(long id) {
         boolean result = false;
         String query = "SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + COLUMN_CATEGORY_ID + " = " + id;
@@ -440,6 +518,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
 
     public boolean deleteTransaction(long id) {
         boolean result = false;
+        Transaction transaction = this.getTransaction(id);
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(TABLE_TRANSACTIONS, COLUMN_TRANSACTION_ID + " = ?",
@@ -447,6 +526,21 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         result = true;
 
         db.close();
+
+        // Update wallet balance (undo transaction effects)
+        Wallet newWallet = transaction.getWallet();
+        newWallet.setBalance(newWallet.getBalance() + transaction.getAmount());
+        result = this.updateWallet(newWallet);
+        if (!result)
+            return false;
+
+        // If a budget exists for this wallet/category pair, update it too
+        Budget budget = findBudget(newWallet.getId(), transaction.getCategory().getId());
+        if (budget != null) {
+            budget.setBalance(budget.getBalance() - transaction.getAmount());
+            result = updateBudget(budget);
+        }
+
         return result;
     }
 

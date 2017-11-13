@@ -86,12 +86,9 @@ public class CreateTransactionActivity extends AppCompatActivity {
 
         Log.i(TAG, "Creating new transaction using the " + wallet.getName() + " wallet and the " + category.getName() + " category");
         Transaction transaction = new Transaction(amount, category, description, createdAt, wallet);
-        dbHandler.addTransaction(transaction);
-
-        // Propagate the effects of the transaction to the corresponding wallet
-        Log.v(TAG, "Deducting transaction amount from wallet balance");
-        wallet.setBalance(wallet.getBalance() - amount);
-        dbHandler.updateWallet(wallet);
+        if (!dbHandler.addTransaction(transaction)) {
+            Log.e(TAG, "Error while trying to add transaction");
+        }
 
         setResult(RESULT_OK);
         finishActivity(RequestsManager.REQUEST_NEW_TRANSACTION);
