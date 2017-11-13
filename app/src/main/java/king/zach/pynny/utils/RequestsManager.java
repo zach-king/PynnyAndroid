@@ -9,4 +9,5 @@ public class RequestsManager {
     public static final int REQUEST_NEW_WALLET = 2;
     public static final int REQUEST_NEW_TRANSACTION = 3;
     public static final int REQUEST_NEW_BUDGET = 4;
+    public static final int REQUEST_DELETE_TRANSACTION = 5;
 }

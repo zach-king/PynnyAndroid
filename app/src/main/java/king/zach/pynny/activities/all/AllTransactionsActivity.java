@@ -88,15 +88,18 @@ public class AllTransactionsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void refreshCursor() {
+        cursor.close();
+        cursor = dbHandler.getAllTransactionsCursor();
+        adapter.changeCursor(cursor);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RequestsManager.REQUEST_NEW_TRANSACTION) {
             if (resultCode == RESULT_OK) {
-                cursor.close();
-                cursor = dbHandler.getAllTransactionsCursor();
-                adapter.changeCursor(cursor);
-
-                Toast.makeText(getApplicationContext(), "Transaction created successfully", Toast.LENGTH_SHORT).show();
+                refreshCursor();
+                Toast.makeText(getApplicationContext(), "Transaction created", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -439,8 +439,15 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     }
 
     public boolean deleteTransaction(long id) {
-        // TODO
-        return false;
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_TRANSACTIONS, COLUMN_TRANSACTION_ID + " = ?",
+                new String[] { String.valueOf(id) });
+        result = true;
+
+        db.close();
+        return result;
     }
 
     public boolean deleteBudget(long id) {

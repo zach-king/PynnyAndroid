@@ -24,4 +24,5 @@
     <string name="create_budget_category_label">Category</string>
     <string name="create_budget_goal_label">Goal</string>
     <string name="create_budget_submit_btn">Create Budget</string>
+    <string name="one_transaction_delete_btn_label">Delete Transaction</string>
 </resources>
