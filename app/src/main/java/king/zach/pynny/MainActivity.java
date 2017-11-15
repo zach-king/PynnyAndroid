@@ -9,6 +9,7 @@ import king.zach.pynny.activities.all.AllBudgetsActivity;
 import king.zach.pynny.activities.all.AllCategoriesActivity;
 import king.zach.pynny.activities.all.AllTransactionsActivity;
 import king.zach.pynny.activities.all.AllWalletsActivity;
+import king.zach.pynny.activities.reporting.ReportingActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void viewAllBudgets(View view) {
         Intent intent = new Intent(this, AllBudgetsActivity.class);
+        startActivity(intent);
+    }
+
+    public void viewReport(View view) {
+        Intent intent = new Intent(this, ReportingActivity.class);
         startActivity(intent);
     }
 }

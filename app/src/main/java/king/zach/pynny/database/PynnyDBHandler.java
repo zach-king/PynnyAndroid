@@ -229,7 +229,12 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
 
         // Propagate the effects of the transaction to the corresponding wallet
         Log.v(TAG, "Deducting transaction amount from wallet balance");
-        transaction.getWallet().setBalance(transaction.getWallet().getBalance() - transaction.getAmount());
+        if (transaction.getCategory().getIsIncome()) {
+            transaction.getWallet().setBalance(transaction.getWallet().getBalance() + transaction.getAmount());
+        } else {
+            transaction.getWallet().setBalance(transaction.getWallet().getBalance() - transaction.getAmount());
+        }
+
         successful = this.updateWallet(transaction.getWallet());
         if (!successful)
             return false;
@@ -547,6 +552,44 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     public boolean deleteBudget(long id) {
         // TODO
         return false;
+    }
+
+    public double getTotalExpenses() {
+        double total = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
+                " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
+
+        Log.i(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+
+        return total;
+    }
+
+    public double getTotalIncome() {
+        double total = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
+                " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
+
+        Log.i(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+
+        return total;
     }
 
 }

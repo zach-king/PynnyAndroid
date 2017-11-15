@@ -25,4 +25,8 @@
     <string name="create_budget_goal_label">Goal</string>
     <string name="create_budget_submit_btn">Create Budget</string>
     <string name="one_transaction_delete_btn_label">Delete Transaction</string>
+    <string name="get_report">View Report</string>
+
+    <string name="total_expenses">Total Expenses: $%1$.2f</string>
+    <string name="total_income">Total Income: $%1$.2f</string>
 </resources>
