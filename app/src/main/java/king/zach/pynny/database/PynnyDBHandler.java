@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import king.zach.pynny.database.models.Budget;
 import king.zach.pynny.database.models.Category;
 import king.zach.pynny.database.models.Transaction;
@@ -420,6 +425,37 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return budget;
     }
 
+    public List<Transaction> findTransactions(long categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] args = { String.valueOf(categoryId) };
+
+        Cursor cursor = db.query(
+                TABLE_TRANSACTIONS,
+                TRANSACTION_COLUMNS,
+                COLUMN_TRANSACTION_CATEGORY + " = ?",
+                args,
+                null, null, COLUMN_TRANSACTION_CREATED_AT + " DESC"
+        );
+
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            long tId = cursor.getLong(cursor.getColumnIndex(COLUMN_TRANSACTION_ID));
+            double amount = cursor.getDouble(cursor.getColumnIndex(COLUMN_TRANSACTION_AMOUNT));
+            long cId = cursor.getLong(cursor.getColumnIndex(COLUMN_TRANSACTION_CATEGORY));
+            Category category = getCategory(cId);
+            String description = cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_DESCRIPTION));
+            Wallet wallet = getWallet(cursor.getLong(cursor.getColumnIndex(COLUMN_TRANSACTION_WALLET)));
+            String createdAt = cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_CREATED_AT));
+
+            transactions.add(new Transaction(tId, amount, category, description, createdAt, wallet));
+        }
+
+        cursor.close();
+        db.close();
+
+        return transactions;
+    }
+
     public Cursor getAllWalletsCursor() {
         return getReadableDatabase().query(
                 TABLE_WALLETS, WALLET_COLUMNS, null, null, null, null, COLUMN_WALLET_CREATED_AT + " DESC"
@@ -466,6 +502,33 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return result;
     }
 
+    public boolean updateTransaction(Transaction transaction) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        boolean result = false;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_TRANSACTION_AMOUNT, transaction.getAmount());
+            values.put(COLUMN_TRANSACTION_CATEGORY, transaction.getCategory().getId());
+            values.put(COLUMN_TRANSACTION_WALLET, transaction.getWallet().getId());
+            values.put(COLUMN_TRANSACTION_DESCRIPTION, transaction.getDescription());
+            values.put(COLUMN_TRANSACTION_CREATED_AT, transaction.getCreated_at());
+
+            db.update(TABLE_TRANSACTIONS, values, COLUMN_TRANSACTION_ID + " = " + transaction.getId(), null);
+            db.setTransactionSuccessful();
+            result = true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error while trying to update transaction in database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
+
+        db.close();
+
+        return result;
+    }
+
     public boolean updateBudget(Budget budget) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
@@ -493,6 +556,38 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
             db.endTransaction();
         }
 
+        db.close();
+
+        return result;
+    }
+
+    public boolean updateCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        boolean result = false;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_CATEGORY_NAME, category.getName());
+            int isIncome = 0; if (category.getIsIncome()) { isIncome = 1; }
+            values.put(COLUMN_CATEGORY_IS_INCOME, isIncome);
+
+            db.update(
+                    TABLE_CATEGORIES,
+                    values,
+                    COLUMN_CATEGORY_ID + " = " + category.getId(),
+                    null
+            );
+            result = true;
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, "Error trying to update category in database", e.getCause());
+        } finally {
+            db.endTransaction();
+        }
+
+        db.close();
+
         return result;
     }
 
@@ -508,10 +603,10 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
             category.setId(cursor.getLong(0));
             db.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ?",
                     new String[] { String.valueOf(category.getId()) });
-            cursor.close();
             result = true;
         }
 
+        cursor.close();
         db.close();
         return result;
     }
@@ -554,6 +649,26 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return false;
     }
 
+    public boolean invertCategory(Category category) {
+        List<Transaction> effectedTransactions = findTransactions(category.getId());
+
+        boolean result = true;
+        for (int i = 0; i < effectedTransactions.size(); i++) {
+            Transaction transaction = effectedTransactions.get(i);
+            Wallet wallet = transaction.getWallet();
+
+            if (category.getIsIncome()) {
+                wallet.setBalance(wallet.getBalance() - (2.0 * transaction.getAmount()));
+            } else {
+                wallet.setBalance(wallet.getBalance() + (2.0 * transaction.getAmount()));
+            }
+
+            result = result && updateWallet(wallet);
+        }
+
+        return result;
+    }
+
     public double getTotalExpenses() {
         double total = 0.0;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -573,12 +688,50 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return total;
     }
 
+    public double getExpensesForCategory(long categoryId) {
+        double total = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
+                " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID + " = " + categoryId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
+
+        Log.i(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+
+        return total;
+    }
+
     public double getTotalIncome() {
         double total = 0.0;
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
                 " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
+
+        Log.i(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+
+        return total;
+    }
+
+    public double getIncomeForCategory(long categoryId) {
+        double total = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
+                " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID + " = " + categoryId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
 
         Log.i(TAG, "Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
