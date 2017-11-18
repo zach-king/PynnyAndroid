@@ -666,8 +666,17 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     }
 
     public boolean deleteWallet(long id) {
-        // TODO
-        return false;
+        boolean result = false;
+        Wallet wallet = this.getWallet(id);
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(TABLE_BUDGETS, COLUMN_BUDGET_WALLET + " = ?", new String[] { String.valueOf(id) });
+        db.delete(TABLE_TRANSACTIONS, COLUMN_TRANSACTION_WALLET + " = ?", new String[] { String.valueOf(id) });
+        result = db.delete(TABLE_WALLETS, COLUMN_WALLET_ID + " = ?",
+                new String[] { String.valueOf(id) }) == 1;
+
+        db.close();
+        return result;
     }
 
     public boolean deleteTransaction(long id) {
@@ -699,8 +708,15 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     }
 
     public boolean deleteBudget(long id) {
-        // TODO
-        return false;
+        boolean result = false;
+        Transaction transaction = this.getTransaction(id);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        result = db.delete(TABLE_BUDGETS, COLUMN_BUDGET_ID + " = ?",
+                new String[] { String.valueOf(id) }) == 1;
+
+        db.close();
+        return result;
     }
 
     public boolean invertCategory(Category category) {
