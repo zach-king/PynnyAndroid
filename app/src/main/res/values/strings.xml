@@ -25,6 +25,9 @@
     <string name="create_budget_goal_label">Goal</string>
     <string name="create_budget_submit_btn">Create Budget</string>
     <string name="one_transaction_delete_btn_label">Delete Transaction</string>
+    <string name="one_budget_delete_btn_label">Delete Budget</string>
+    <string name="one_wallet_delete_btn_label">Delete Wallet</string>
+    <string name="one_category_delete_btn_label">Delete Category</string>
     <string name="get_report">View Report</string>
 
     <string name="total_expenses">Total Expenses: $%1$.2f</string>

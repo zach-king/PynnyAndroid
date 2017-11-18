@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -55,6 +56,13 @@ public class OneCategoryActivity extends AppCompatActivity {
 
                 category.setIsIncome(!category.getIsIncome());
                 dbHandler.updateCategory(category);
+            }
+        });
+
+        ((Button) findViewById(R.id.btnOneCategoryDelete)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbHandler.deleteCategory(category.getId());
             }
         });
 

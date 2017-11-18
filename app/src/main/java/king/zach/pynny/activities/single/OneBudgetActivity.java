@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,6 +19,8 @@ import king.zach.pynny.database.adapters.TransactionCursorAdapter;
 import king.zach.pynny.database.models.Budget;
 
 public class OneBudgetActivity extends AppCompatActivity {
+
+    private static String TAG = "OneBudgetActivity";
 
     private Budget budget;
     private TextView tvRatio;
@@ -51,6 +56,13 @@ public class OneBudgetActivity extends AppCompatActivity {
         lvTransactions.setAdapter(transactionCursorAdapter);
 
         setViewFields();
+
+        ((Button) findViewById(R.id.btnOneBudgetDelete)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbHandler.deleteBudget(budget.getId());
+            }
+        });
     }
 
     private void setViewFields() {
