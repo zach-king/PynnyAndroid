@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import king.zach.pynny.database.adapters.TransactionCursorAdapter;
 import king.zach.pynny.database.models.Budget;
 import king.zach.pynny.database.models.Category;
 import king.zach.pynny.database.models.Transaction;
@@ -425,6 +426,37 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         return budget;
     }
 
+    public Budget findBudget(long categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] args = { String.valueOf(categoryId) };
+
+        Cursor cursor = db.query(
+                TABLE_BUDGETS,
+                BUDGET_COLUMNS,
+                COLUMN_BUDGET_CATEGORY + " = ?",
+                args, null, null, COLUMN_BUDGET_MONTH + " DESC"
+        );
+
+        Budget budget = null;
+        if (cursor.moveToFirst()) {
+            long bId = cursor.getLong(cursor.getColumnIndex(COLUMN_BUDGET_ID));
+            double goal = cursor.getDouble(cursor.getColumnIndex(COLUMN_BUDGET_GOAL));
+            double balance = cursor.getDouble(cursor.getColumnIndex(COLUMN_BUDGET_BALANCE));
+            long catId = cursor.getLong(cursor.getColumnIndex(COLUMN_BUDGET_CATEGORY));
+            long walId = cursor.getLong(cursor.getColumnIndex(COLUMN_BUDGET_WALLET));
+            String month = cursor.getString(cursor.getColumnIndex(COLUMN_BUDGET_MONTH));
+
+            Category category = getCategory(catId);
+            Wallet wallet = getWallet(walId);
+
+            budget = new Budget(bId, goal, balance, category, wallet, month);
+        }
+
+        cursor.close();
+        db.close();
+        return budget;
+    }
+
     public List<Transaction> findTransactions(long categoryId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] args = { String.valueOf(categoryId) };
@@ -471,6 +503,28 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     public Cursor getAllTransactionsCursor() {
         return getReadableDatabase().query(
                 TABLE_TRANSACTIONS, TRANSACTION_COLUMNS, null, null, null, null, COLUMN_TRANSACTION_CREATED_AT + " DESC"
+        );
+    }
+
+    public Cursor getTransactions(long walletId) {
+        return getReadableDatabase().query(
+                TABLE_TRANSACTIONS, TRANSACTION_COLUMNS, COLUMN_TRANSACTION_WALLET + " = " + String.valueOf(walletId),
+                null, null, null, COLUMN_TRANSACTION_CREATED_AT + " DESC"
+        );
+    }
+
+    public Cursor getTransactionsForBudget(long budgetId) {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_BUDGETS + " ON " +
+        TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_BUDGETS + "." + COLUMN_BUDGET_CATEGORY +
+        " WHERE " + TABLE_BUDGETS + "." + COLUMN_BUDGET_ID + " = " + String.valueOf(budgetId) + " ORDER BY " + TABLE_TRANSACTIONS +
+                "." + COLUMN_TRANSACTION_CREATED_AT + " DESC", null);
+    }
+
+    public Cursor getTransactionsForCategory(long categoryId) {
+        return getReadableDatabase().query(
+                TABLE_TRANSACTIONS, TRANSACTION_COLUMNS, COLUMN_TRANSACTION_CATEGORY + " = " + String.valueOf(categoryId),
+                null, null, null, COLUMN_TRANSACTION_CREATED_AT + " DESC"
         );
     }
 
@@ -652,6 +706,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     public boolean invertCategory(Category category) {
         List<Transaction> effectedTransactions = findTransactions(category.getId());
 
+        // Propagate the effects of the inversion to the affected wallets
         boolean result = true;
         for (int i = 0; i < effectedTransactions.size(); i++) {
             Transaction transaction = effectedTransactions.get(i);

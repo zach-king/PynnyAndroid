@@ -40,7 +40,7 @@
 
     <ListView
         android:id="@+id/lvOneBudgetTransactions"
-        android:layout_width="369dp"
+        android:layout_width="0dp"
         android:layout_height="452dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
