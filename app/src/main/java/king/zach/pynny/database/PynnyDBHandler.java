@@ -516,8 +516,8 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     public Cursor getTransactionsForBudget(long budgetId) {
         SQLiteDatabase db = getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_BUDGETS + " ON " +
-        TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_BUDGETS + "." + COLUMN_BUDGET_CATEGORY +
-        " WHERE " + TABLE_BUDGETS + "." + COLUMN_BUDGET_ID + " = " + String.valueOf(budgetId) + " ORDER BY " + TABLE_TRANSACTIONS +
+                TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_BUDGETS + "." + COLUMN_BUDGET_CATEGORY +
+                " WHERE " + TABLE_BUDGETS + "." + COLUMN_BUDGET_ID + " = " + String.valueOf(budgetId) + " ORDER BY " + TABLE_TRANSACTIONS +
                 "." + COLUMN_TRANSACTION_CREATED_AT + " DESC", null);
     }
 
@@ -747,7 +747,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
                 " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
 
-        Log.i(TAG, "Running query: " + query);
+        Log.i(TAG, "getTotalExpenses: Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToNext()) {
@@ -766,7 +766,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
                 " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID + " = " + categoryId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
 
-        Log.i(TAG, "Running query: " + query);
+        Log.i(TAG, "getExpensesForCategory: Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToNext()) {
@@ -785,7 +785,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
                 " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
 
-        Log.i(TAG, "Running query: " + query);
+        Log.i(TAG, "getTotalIncome: Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToNext()) {
@@ -804,7 +804,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
                 " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID + " = " + categoryId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
 
-        Log.i(TAG, "Running query: " + query);
+        Log.v(TAG, "Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToNext()) {
@@ -822,9 +822,9 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
-                " WHERE " + TABLE_WALLETS + "." + COLUMN_WALLET_ID + " = " + walletId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
+                " WHERE " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_WALLET + " = " + walletId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
 
-        Log.v(TAG, "Running query: " + query);
+        Log.v(TAG, "getIncomeForWallet: Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToNext()) {
@@ -841,9 +841,9 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
-                " WHERE " + TABLE_WALLETS + "." + COLUMN_WALLET_ID + " = " + walletId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
+                " WHERE " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_WALLET + " = " + walletId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
 
-        Log.v(TAG, "Running query: " + query);
+        Log.v(TAG, "getIncomeForWallet: Running query: " + query);
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToNext()) {

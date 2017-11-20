@@ -3,7 +3,13 @@ package king.zach.pynny.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.util.Pair;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import king.zach.pynny.database.PynnyDBHandler;
 import king.zach.pynny.database.models.Report;
@@ -18,12 +24,15 @@ import king.zach.pynny.database.models.Wallet;
 
 public class ReportingUtil {
 
+    private static String TAG = "ReportingUtil";
+
     // Use the singleton design pattern
     private static ReportingUtil sInstance;
     private Context context;
     private PynnyDBHandler dbHandler;
 
     private ReportingUtil(Context context) {
+        this.context = context;
         dbHandler = PynnyDBHandler.getInstance(context);
     }
 
@@ -45,7 +54,7 @@ public class ReportingUtil {
             long walletId = walletCursor.getLong(walletCursor.getColumnIndex(PynnyDBHandler.COLUMN_WALLET_ID));
             String walletName = walletCursor.getString(walletCursor.getColumnIndex(PynnyDBHandler.COLUMN_WALLET_NAME));
             double walletExpenses = dbHandler.getExpenseForWallet(walletId);
-            double walletIncome = dbHandler.getExpenseForWallet(walletId);
+            double walletIncome = dbHandler.getIncomeForWallet(walletId);
 
             report.expenseByWallet.add(new Pair<String, Double>(walletName, walletExpenses));
             report.incomeByWallet.add(new Pair<String, Double>(walletName, walletIncome));
@@ -60,7 +69,40 @@ public class ReportingUtil {
 
             report.spendingByCategory.add(new Pair<String, Double>(categoryName, categorySpendings));
         }
-        categoryCursor.close();
+
+        return report;
+    }
+
+    public void saveReport(Report report) {
+
+        if (context == null) {
+            Log.e(TAG, "Context is null");
+            return;
+        }
+        try {
+            Log.d(TAG, context.getFilesDir().getAbsolutePath());
+            FileOutputStream fos = context.openFileOutput("pynny_report_" + report.createdAt, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(report);
+            os.close();
+            fos.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error while saving report: " + e.getMessage());
+        }
+    }
+
+    public Report loadReport(String reportFilePath) {
+        Report report = null;
+
+        try {
+            FileInputStream fis = context.openFileInput(reportFilePath);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            report = (Report) is.readObject();
+            is.close();
+            fis.close();
+        } catch (Exception e) {
+
+        }
 
         return report;
     }
