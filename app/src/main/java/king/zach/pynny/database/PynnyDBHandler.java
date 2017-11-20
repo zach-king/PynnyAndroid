@@ -798,7 +798,7 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
     }
 
     public double getIncomeForCategory(long categoryId) {
-        double total = 0.0;
+        double total = 0.0f;
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
                 " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
@@ -812,7 +812,65 @@ public class PynnyDBHandler extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        db.close();
 
+        return total;
+    }
+
+    public double getExpenseForWallet(long walletId) {
+        double total = 0.0f;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
+                " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_WALLETS + "." + COLUMN_WALLET_ID + " = " + walletId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 0)";
+
+        Log.v(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
+        return total;
+    }
+
+    public double getIncomeForWallet(long walletId) {
+        double total = 0.0f;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS + " JOIN " + TABLE_CATEGORIES +
+                " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_WALLETS + "." + COLUMN_WALLET_ID + " = " + walletId + " AND " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_IS_INCOME + " = 1)";
+
+        Log.v(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
+        return total;
+    }
+
+    public double getSpendingForCategory(long categoryId) {
+        double total = 0.0f;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT SUM(" + COLUMN_TRANSACTION_AMOUNT + ") FROM (SELECT " + COLUMN_TRANSACTION_AMOUNT + " FROM " + TABLE_TRANSACTIONS +
+                " JOIN " + TABLE_CATEGORIES + " ON " + TABLE_TRANSACTIONS + "." + COLUMN_TRANSACTION_CATEGORY + " = " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID +
+                " WHERE " + TABLE_CATEGORIES + "." + COLUMN_CATEGORY_ID + " = " + categoryId + ")";
+
+        Log.v(TAG, "Running query: " + query);
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToNext()) {
+            total = cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
         return total;
     }
 

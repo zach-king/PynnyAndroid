@@ -31,6 +31,9 @@ public class Report {
     public Report() {
         this.id = sReportCount;
         this.createdAt = TimeUtil.getCurrentTimeString();
+        this.expenseByWallet = new LinkedList<>();
+        this.incomeByWallet = new LinkedList<>();
+        this.spendingByCategory = new LinkedList<>();
 
         sReportCount++;
     }
